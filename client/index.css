@@ -1,0 +1,105 @@
+#toolbar {
+  background-color: rgba(191, 191, 191, .15);
+  padding: 5px 10px;
+}
+.dx-toolbar-button .dx-button {
+  background-color: rgba(191, 191, 191, -0.15);
+  border: none;
+}
+.dx-toolbar-button > .dx-toolbar-item-content {
+  margin-left: -7px;
+}
+.dx-list-item-icon {
+  margin-right: 10px;
+}
+#view {
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+/* header ของ Grid*/
+.dx-datagrid .dx-header-row {
+  background-color: orange;
+  color: white;
+  font-weight: bold;
+}
+
+/* ปุ่มในฟอร์มของ dxForm / dxPopup */
+.dx-popup .dx-button {
+  background-color: #007bff; /* blue */
+  color: white;
+  border: none;
+}
+
+.dx-popup .dx-button:hover {
+  background-color: #007bff; /* blue */
+}
+
+/* สมมุติปุ่ม Save อยู่ซ้าย และ Cancel อยู่ขวา */
+.dx-datagrid-form-buttons-container .dx-button:nth-child(1) {
+  background-color: #007bff; /* Blue - Save */
+  color: white;
+  font-weight: bold;
+}
+
+.dx-datagrid-form-buttons-container .dx-button:nth-child(2) {
+  background-color: #dc3545; /* Red - Cancel */
+  color: white;
+  font-weight: bold;
+}
+div.dx-button:nth-child(2){
+  background-color: #007bff; /* blue */
+  color: white !important;
+  margin-top: 15px;
+}
+
+/* หัวเรื่อง popup สีส้มเข้ม และสีตัวอักษรขาว */
+.dx-popup-title {
+  background-color: orange !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* ปุ่ม close เป็นขาวเพื่อให้เด่นขึ้น */
+.dx-popup-title .dx-closebutton .dx-icon {
+  color: white !important;
+}
+
+/* ปุ่ม Save สีเขียว */
+.dx-button[aria-label="Save"],
+.dx-button:has(.dx-button-text:contains("Save")) {
+  background-color: #4caf50 !important;
+  color: white;
+}
+
+/* ปุ่ม Cancel สีเทา */
+.dx-button[aria-label="Cancel"],
+.dx-button:has(.dx-button-text:contains("Cancel")) {
+  background-color: #9e9e9e !important;
+  color: white;
+}
+
+/* ปุ่ม Delete สีแดง */
+.dx-button[aria-label="Delete"],
+.dx-button:has(.dx-button-text:contains("Delete")) {
+  background-color: #f44336 !important;
+  color: white;
+}
+
+/* เปลี่ยน background ของ panel menu (actual drawer content) */
+.dx-drawer-panel-content {
+  background-color: #f90202 !important; /* ส้มกลาง หรือปรับเฉดตามต้องการ */
+}
+
+/* ถ้าคุณใช้ shading (overlay) ให้ปรับสี shading ด้วย */
+.dx-overlay-content {
+  background-color: rgba(250, 100, 0, 0.1) !important;
+}
+
+.dx-toolbar .dx-toolbar-items-container{
+  background-color: orange !important;
+  color: white;
+}
+body {
+  width: 98%;
+}

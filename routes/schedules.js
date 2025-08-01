@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Schedule = require('../models/Schedule');
-const Nurse = require('../models/Nurse');
+const Schedule = require('../models/schedule');
+const Nurse = require('../models/nurse');
 
 router.post('/generate', async (req, res) => {
   const { startDate, endDate } = req.body;
