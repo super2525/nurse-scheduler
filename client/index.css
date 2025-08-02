@@ -112,10 +112,8 @@ div.dx-button:nth-child(2){
 
 .toast {
   min-width: 300px;
-  max-width: 90vw;
-  margin: 10px auto;
-  padding: 16px 24px;
-  border-radius: 8px;
+  height: 50px;
+  border-radius: 7px;
   color: #fff;
   font-family: sans-serif;
   font-size: 16px;
@@ -124,6 +122,7 @@ div.dx-button:nth-child(2){
   opacity: 0;
   transition: opacity 0.3s ease, transform 0.3s ease;
   transform: scale(0.95);
+  padding-top: 10px; /* Adjust padding to center icon vertically */
 }
 
 .toast.show {
@@ -143,7 +142,7 @@ div.dx-button:nth-child(2){
   background-color: #007bff;
 }
 .toast .icon {
-  font-size: 2em;      /* Make icon bigger */
+  font-size: 2.2em;      /* Make icon bigger */
   width: 1em;          /* Keep width/height ratio 1 */
   height: 1em;
   display: inline-flex;
@@ -152,5 +151,11 @@ div.dx-button:nth-child(2){
   vertical-align: middle;
   text-align: left;
   margin-right: 0.5em;
-  line-height: 1em;
+  line-height: 1em;margin-left: -20px; /* Adjust to align with icon */
+}
+.toast .message {
+  display: inline-block;
+  vertical-align: middle !important;
+  text-align: left; 
+  margin-left: 20px; /* Adjust to align with icon */ 
 }
