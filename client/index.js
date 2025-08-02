@@ -2,18 +2,51 @@ $(function () {
   const BASE_URL = "http://127.0.0.1:3000/api"; // เปลี่ยนตามจริง
   const IMG_URL = "http://127.0.0.1:3000";
 
-  function getToken() {
-    return localStorage.getItem("token") || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4OGI0YTJiZTFjY2QzZjdiNmI1ZmNmZSIsInVzZXJuYW1lIjoiZGQiLCJyb2xlIjoiTnVyc2UiLCJ";
+  function showToast(type, message, duration = 2000) {
+    const container = document.getElementById("toast-container");
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+
+    // Icon based on type
+    const icons = {
+      success: "✅",
+      error: "❌",
+      info: "ℹ️",
+    };
+
+    toast.innerHTML = `
+    <span class="icon">${icons[type] || ""}</span>
+    <span class="message">${message}</span>
+  `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 10);
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+      setTimeout(() => {
+        container.removeChild(toast);
+      }, 300);
+    }, duration);
   }
 
-  window.postByAxios = function(functionName, params) {
+  function getToken() {
+    return (
+      localStorage.getItem("token") ||
+      "eyJhbGciOiJIUzI1NiIsIn2QzZjdiNmI1ZmNmZSIsInVzZXJuYW1lIjoiZGQiLCJyb2xlIjoiTnVyc2UiLCJ"
+    );
+  }
+
+  window.postByAxios = async function (functionName, params) {
     const token = getToken();
-    console.log('postByAxios params: ',params);
-    // ถ้า params เป็น FormData ให้ใช้ 'multipart/form-data'
-    // แต่ถ้าไม่ใช่ให้ใช้ 'application/json' เพื่อให้ backend รับถูกต้อง
+    console.log("postByAxios params:", params);
+
     const isFormData = params instanceof FormData;
-    if (functionName[0] !="/"){
-      functionName = "/"+functionName;  // is it correct?
+
+    // ตรวจสอบให้ functionName ขึ้นต้นด้วย /
+    if (functionName[0] !== "/") {
+      functionName = "/" + functionName;
     }
     return axios({
       method: "POST",
@@ -24,20 +57,24 @@ $(function () {
         "Content-Type": isFormData ? "multipart/form-data" : "application/json",
       },
     })
-      .then((res) => res.data)
+      .then((res) => {
+        console.log("postByAxios response:", res);
+        return res.data;
+      })
       .catch((err) => {
         console.error(
           `❌ POST ${functionName} failed:`,
           err.response?.data || err.message
         );
+        showToast("error", `POST ${functionName} failed: ${err.message}`);
         throw err.response?.data || err;
       });
-  }
+  };
 
-  window.getByAxios=function(functionName, params) {
-    const token = getToken();  
-    if (functionName[0] !="/"){
-      functionName = "/"+functionName;  // is it correct?
+  window.getByAxios = function (functionName, params) {
+    const token = getToken();
+    if (functionName[0] != "/") {
+      functionName = "/" + functionName; // is it correct?
     }
     return axios({
       method: "GET",
@@ -55,7 +92,7 @@ $(function () {
         );
         throw err.response?.data || err;
       });
-  }
+  };
 
   /*$("#view").load("./pages/inbox.html"); // first part to load */
   let $avatar;
@@ -70,7 +107,7 @@ $(function () {
     role: "",
     avatar: "",
   };
-  $preview ={};
+  $preview = {};
   $("#signup-form").dxPopup({
     title: "Sign Up",
     visible: false,
@@ -152,12 +189,12 @@ $(function () {
                   height: "100px",
                   marginTop: "10px",
                   objectFit: "cover",
-                  border: "1px solid #ccc", 
+                  border: "1px solid #ccc",
                   borderRadius: "51%",
                 })
                 .hide() // ซ่อนจนกว่าจะมีไฟล์
                 .appendTo(itemElement);
-            }
+            },
           },
           {
             dataField: "avatar",
@@ -173,9 +210,13 @@ $(function () {
                     const file = e.value[0];
 
                     if (file && file.size > 2 * 1024 * 1024) {
-                      DevExpress.ui.notify("File size exceeds 2MB","error",2000);
+                      DevExpress.ui.notify(
+                        "File size exceeds 2MB",
+                        "error",
+                        2000
+                      );
                       signupFormData.avatarFile = null;
-                    } else {                      
+                    } else {
                       signupFormData.avatarFile = file;
 
                       if (file) {
@@ -219,37 +260,36 @@ $(function () {
                   if (data.avatarFile) {
                     formDataToSend.append("avatar", data.avatarFile);
                   }
+                  const token = getToken();
+                  const isFormData = formDataToSend instanceof FormData;
 
                   axios
-                    .post(
-                      "http://127.0.0.1:3000/api/users/signup",
-                      formDataToSend,
-                      {
-                        headers: {
-                          "Content-Type": "multipart/form-data",
-                        },
+                    .post(`${BASE_URL}/users/signup`, formDataToSend, {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": isFormData
+                          ? "multipart/form-data"
+                          : "application/json",
+                      },
+                    })
+                    .then((res) => {
+                      console.log("resCont Data:", res);
+                      res = res.data;
+                      if (res.result === "success") {
+                        showToast(
+                          "success",
+                          "Signup successful! Please login.",
+                          2000
+                        );
+                        $("#signup-form").dxPopup("instance").hide();
+                      } else {
+                        showToast("info", res.message || "Signup failed", 3000);
                       }
-                    )
-                    .then(function (response) {
-                    try {
-                      console.log("✅ response:", response.data);
-                      DevExpress.ui.notify(
-                        {
-                          message: "Registered successfully!",
-                          type: "success",
-                        },
-                        { position: "center", direction: "up-push" }
-                      );
-                      $("#signup-form").dxPopup("instance").hide();
-                    }                    
-                    catch(err) {
-                      DevExpress.ui.notify(
-                        "Error occurred during signup",
-                        "error",
-                        3000
-                      );
-                    };
-                });
+                    })
+                    .catch((err) => {
+                      console.error("Signup error:", err);
+                      showToast("error", "Signup failed: " + err.message, 3000);
+                    });
                 }
               },
             },
@@ -272,9 +312,18 @@ $(function () {
       template: function () {
         const $list = $("<div/>").dxList({
           items: [
-            
-            { id: 1, text: "Dashboard", icon: "mediumiconslayout", filePath: "dashboard" },
-            { id: 2, text: "System Seetings", icon: "checklist", filePath: "systemconfig" },
+            {
+              id: 1,
+              text: "Dashboard",
+              icon: "mediumiconslayout",
+              filePath: "dashboard",
+            },
+            {
+              id: 2,
+              text: "System Seetings",
+              icon: "checklist",
+              filePath: "systemconfig",
+            },
             { id: 3, text: "Trash", icon: "optionsgear", filePath: "trash" },
             { id: 4, text: "Spam", icon: "mention", filePath: "spam" },
             { id: 5, text: "5", icon: "message", filePath: "555" },
@@ -295,9 +344,12 @@ $(function () {
           onSelectionChanged: function (e) {
             if (e.addedItems[0].id > 0) {
               // try to get listitems index
-              $("#view").load("./pages/" + e.addedItems[0].filePath + ".html", function(){
-                $.getScript("./pages/" + e.addedItems[0].filePath + ".js");
-              });
+              $("#view").load(
+                "./pages/" + e.addedItems[0].filePath + ".html",
+                function () {
+                  $.getScript("./pages/" + e.addedItems[0].filePath + ".js");
+                }
+              );
 
               drawer.hide();
             }
@@ -344,138 +396,147 @@ $(function () {
     ],
   });
   const loginFormData = {
-    username:"",
-    password:""
-  }
-  
-    $("#login-form").dxPopup({
-    title: "Login",
-    visible: false,
-    width: 350,
-    height: "auto",
-    showCloseButton: true,
-    dragEnabled: true,
-    contentTemplate: function (contentElement) {
+    username: "",
+    password: "",
+  };
+
+  $("#login-form")
+    .dxPopup({
+      title: "Login",
+      visible: false,
+      width: 350,
+      height: "auto",
+      showCloseButton: true,
+      dragEnabled: true,
+      contentTemplate: function (contentElement) {
         contentElement.append($("<div id='login-container'>"));
         $("#login-container").dxForm({
-        formData: loginFormData,
-        labelLocation: "top",
-        items: [
+          formData: loginFormData,
+          labelLocation: "top",
+          items: [
             {
-            dataField: "username",
-            label: { text: "Username" },
-            validationRules: [{ type: "required" }],
+              dataField: "username",
+              label: { text: "Username" },
+              validationRules: [{ type: "required" }],
             },
             {
-            dataField: "password",
-            label: { text: "Password" },
-            editorType: "dxTextBox",
-            editorOptions: { mode: "password" },
-            validationRules: [{ type: "required" }],
+              dataField: "password",
+              label: { text: "Password" },
+              editorType: "dxTextBox",
+              editorOptions: { mode: "password" },
+              validationRules: [{ type: "required" }],
             },
             {
-            itemType: "button",
-            horizontalAlignment: "center",
-            buttonOptions: {
+              itemType: "button",
+              horizontalAlignment: "center",
+              buttonOptions: {
                 text: "Login",
                 type: "default",
                 onClick: function () {
-                const form = $("#login-container").dxForm("instance");
-                const result = form.validate();
-                if (result.isValid) {
+                  const form = $("#login-container").dxForm("instance");
+                  const result = form.validate();
+                  if (result.isValid) {
                     const data = form.option("formData");
                     try {
-                    postByAxios("/users/authenticate",form.option("formData"))
-                    .then((res) => {
+                      postByAxios(
+                        "/users/authenticate",
+                        form.option("formData")
+                      ).then((res) => {
                         // ✅ Save token to localStorage
                         localStorage.setItem("token", res.token);
-                        
-                        updateAccountButton({username: data.username,avatar:res.avatar});
 
-                        DevExpress.ui.notify({ message: "Login successful!", type: "success" },{ position: "center", direction: "up-push" });
+                        updateAccountButton({
+                          username: data.username,
+                          avatar: res.avatar,
+                        });
+
+                        DevExpress.ui.notify(
+                          { message: "Login successful!", type: "success" },
+                          { position: "center", direction: "up-push" }
+                        );
 
                         $("#login-form").dxPopup("instance").hide();
-                    });
+                      });
+                    } catch (err) {
+                      DevExpress.ui.notify(
+                        "Invalid username or password",
+                        "error",
+                        3000
+                      );
                     }
-                    catch(err) {
-                        DevExpress.ui.notify("Invalid username or password","error",3000);
-                    };
-                }
+                  }
                 },
+              },
             },
-            },
-        ],
+          ],
         });
-    },
-    }).dxPopup('instance');
-  
+      },
+    })
+    .dxPopup("instance");
 
   function showLoginPopup() {
     try {
-         $("#login-form").dxPopup("instance").show();
+      $("#login-form").dxPopup("instance").show();
     } catch {
-        console.log('login Data: ');
+      console.log("login Data: ");
     }
- 
   }
 
-function updateAccountButton(userInfo) {
-  const avatarUrl = userInfo.avatar || "default-avatar.png";
-  const src = IMG_URL + avatarUrl;
+  function updateAccountButton(userInfo) {
+    const avatarUrl = userInfo.avatar || "default-avatar.png";
+    const src = IMG_URL + avatarUrl;
 
-  const toolbar = $("#toolbar").dxToolbar("instance");
+    const toolbar = $("#toolbar").dxToolbar("instance");
 
-  // 🔁 เคลียร์ items ด้านขวาทั้งหมดก่อนใส่ใหม่ (เฉพาะส่วน after)
-  toolbar.option("items", toolbar.option("items").filter(item => item.location !== "after"));
+    // 🔁 เคลียร์ items ด้านขวาทั้งหมดก่อนใส่ใหม่ (เฉพาะส่วน after)
+    toolbar.option(
+      "items",
+      toolbar.option("items").filter((item) => item.location !== "after")
+    );
 
-  // ✅ เพิ่ม Avatar (ก่อนปุ่ม)
-  toolbar.option("items").push({
-    location: "after",
-    template: function () {
-      return $("<img>")
-        .attr("src", src)
-        .css({
+    // ✅ เพิ่ม Avatar (ก่อนปุ่ม)
+    toolbar.option("items").push({
+      location: "after",
+      template: function () {
+        return $("<img>").attr("src", src).css({
           width: 36,
           height: 36,
           borderRadius: "50%",
           objectFit: "cover",
           marginRight: "10px",
         });
-    }
-  });
+      },
+    });
 
-  // ✅ ตามด้วย dxDropDownButton
-  toolbar.option("items").push({
-    location: "after",
-    widget: "dxDropDownButton",
-    
-    options: {
-      text: userInfo.username,
-      stylingMode: "text",
-      displayExpr: "name",
-      keyExpr: "id",
-      width: 100,
-      items: [
-        { id: 1, name: "Profile" },
-        { id: 2, name: "Logout" }
-      ],
-      onItemClick: function (e) {
-        if (e.itemData.name === "Logout") {
-          localStorage.removeItem("token");
-          location.reload();
-        } else if (e.itemData.name === "Profile") {
-          $("#view").load("./pages/profile.html", function () {
-            $.getScript("./pages/profile.js");
-          });
-        }
-      }
-    }
-  });
+    // ✅ ตามด้วย dxDropDownButton
+    toolbar.option("items").push({
+      location: "after",
+      widget: "dxDropDownButton",
 
-  // 🔄 อัปเดต toolbar ทั้งหมด
-  toolbar.repaint();
-}
+      options: {
+        text: userInfo.username,
+        stylingMode: "text",
+        displayExpr: "name",
+        keyExpr: "id",
+        width: 100,
+        items: [
+          { id: 1, name: "Profile" },
+          { id: 2, name: "Logout" },
+        ],
+        onItemClick: function (e) {
+          if (e.itemData.name === "Logout") {
+            localStorage.removeItem("token");
+            location.reload();
+          } else if (e.itemData.name === "Profile") {
+            $("#view").load("./pages/profile.html", function () {
+              $.getScript("./pages/profile.js");
+            });
+          }
+        },
+      },
+    });
 
-
-
+    // 🔄 อัปเดต toolbar ทั้งหมด
+    toolbar.repaint();
+  }
 });

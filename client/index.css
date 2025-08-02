@@ -1,4 +1,4 @@
-#toolbar {
+/* #toolbar {
   background-color: rgba(191, 191, 191, .15);
   padding: 5px 10px;
 }
@@ -15,7 +15,7 @@
 #view {
   margin-left: 10px;
   margin-top: 10px;
-}
+} */
 
 /* header ของ Grid*/
 .dx-datagrid .dx-header-row {
@@ -91,15 +91,66 @@ div.dx-button:nth-child(2){
   background-color: #f90202 !important; /* ส้มกลาง หรือปรับเฉดตามต้องการ */
 }
 
-/* ถ้าคุณใช้ shading (overlay) ให้ปรับสี shading ด้วย */
 .dx-overlay-content {
-  background-color: rgba(250, 100, 0, 0.1) !important;
+  background-color: rgba(236, 100, 5, 0.2) !important;
 }
+  
 
 .dx-toolbar .dx-toolbar-items-container{
   background-color: orange !important;
   color: white;
 }
-body {
-  width: 98%;
+
+#toast-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  pointer-events: none; /* Allows clicks to pass through */
+}
+
+.toast {
+  min-width: 300px;
+  max-width: 90vw;
+  margin: 10px auto;
+  padding: 16px 24px;
+  border-radius: 8px;
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 16px;
+  text-align: center;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: scale(0.95);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.toast.success {
+  background-color: #28a745;
+}
+
+.toast.error {
+  background-color: #dc3545;
+}
+
+.toast.info {
+  background-color: #007bff;
+}
+.toast .icon {
+  font-size: 2em;      /* Make icon bigger */
+  width: 1em;          /* Keep width/height ratio 1 */
+  height: 1em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  vertical-align: middle;
+  text-align: left;
+  margin-right: 0.5em;
+  line-height: 1em;
 }

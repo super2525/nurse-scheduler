@@ -9,9 +9,10 @@ const userSchema = new Schema({
   role:     { type: String, enum: ['Nurse', 'Admin', 'Manager'], required: true },
   avatar:   String, // path to uploaded file
 
-  userStatus: { type: String, default: '0' }, // 0 = Inactive
+  userStatus: { type: String, default: 'Pending' }, // 0 = Inactive
   address:    String, // IP address
-  createDate: { type: Date, default: Date.now } // ISODate
+  emailToken: { type: String, unique: true }, // Token for email confirmation
+  createDate: { type: Date, default: () => new Date() } // Always set to current date/time
 });
 
 exports.User = mongoose.model('User', userSchema);
