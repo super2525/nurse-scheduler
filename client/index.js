@@ -303,8 +303,7 @@ $(function () {
     $("#signup-form").dxPopup("instance").show();
   }
 
-  const drawer = $("#drawer")
-    .dxDrawer({
+  const drawer = $("#drawer").dxDrawer({
       minSize: 37,
       height: 400,
       revealMode: "expand",
