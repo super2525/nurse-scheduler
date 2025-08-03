@@ -323,21 +323,7 @@ $(function () {
               text: "System Seetings",
               icon: "checklist",
               filePath: "systemconfig",
-            },
-            { id: 3, text: "Trash", icon: "optionsgear", filePath: "trash" },
-            { id: 4, text: "Spam", icon: "mention", filePath: "spam" },
-            { id: 5, text: "5", icon: "message", filePath: "555" },
-            { id: 6, text: "6 Mail", icon: "check", filePath: "666" },
-            { id: 7, text: "7", icon: "trash", filePath: "777" },
-            { id: 8, text: "8", icon: "mention", filePath: "888" },
-            { id: 11, text: "Inbox", icon: "message", filePath: "inbox" },
-            { id: 10, text: "Sent Mail", icon: "check", filePath: "sent-mail" },
-            { id: 13, text: "Trash", icon: "trash", filePath: "trash" },
-            { id: 14, text: "Spam", icon: "mention", filePath: "spam" },
-            { id: 15, text: "5", icon: "message", filePath: "555" },
-            { id: 16, text: "6 Mail", icon: "check", filePath: "666" },
-            { id: 17, text: "7", icon: "trash", filePath: "777" },
-            { id: 18, text: "8", icon: "mention", filePath: "888" },
+            }
           ],
           width: 200,
           selectionMode: "single",
@@ -512,7 +498,6 @@ $(function () {
     toolbar.option("items").push({
       location: "after",
       widget: "dxDropDownButton",
-
       options: {
         text: userInfo.username,
         stylingMode: "text",
@@ -521,15 +506,17 @@ $(function () {
         width: 100,
         items: [
           { id: 1, name: "Profile" },
-          { id: 2, name: "Logout" },
+          { id: 2, name: "Settings" },
+          { id: 3, name: "Security" },
+          { id: 4, name: "Logout" },
         ],
         onItemClick: function (e) {
           if (e.itemData.name === "Logout") {
             localStorage.removeItem("token");
             location.reload();
-          } else if (e.itemData.name === "Profile") {
-            $("#view").load("./pages/profile.html", function () {
-              $.getScript("./pages/profile.js");
+          } else {
+            $("#view").load("./pages/"+e.itemData.name+".html", function () {
+              $.getScript("./pages/"+e.itemData.name+".js");
             });
           }
         },
