@@ -1,7 +1,6 @@
-$(function () {
-  const BASE_URL = "http://127.0.0.1:3000/api"; // เปลี่ยนตามจริง
+  const BASE_URL = "http://127.0.0.1:3000/api";
   const IMG_URL = "http://127.0.0.1:3000";
-
+$(function () {
   function showToast(type, message, duration = 2000) {
     const container = document.getElementById("toast-container");
     const toast = document.createElement("div");
@@ -423,10 +422,10 @@ $(function () {
                   if (result.isValid) {
                     const data = form.option("formData");
                     try {
-                      postByAxios(
-                        "/users/authenticate",
-                        form.option("formData")
+                      postByAxios("/users/authenticate",form.option("formData")
                       ).then((res) => {
+                        console.log('res Data: ',res);
+                        if (res.result === "success") {
                         // ✅ Save token to localStorage
                         localStorage.setItem("token", res.token);
 
@@ -441,6 +440,13 @@ $(function () {
                         );
 
                         $("#login-form").dxPopup("instance").hide();
+                      } else {
+
+                        DevExpress.ui.notify(
+                          { message: res.message, type: "warning" },
+                          { position: "center", direction: "up-push" }
+                        );
+                      }
                       });
                     } catch (err) {
                       DevExpress.ui.notify(
@@ -513,6 +519,10 @@ $(function () {
           if (e.itemData.name === "Logout") {
             localStorage.removeItem("token");
             location.reload();
+          } else if (e.itemData.name === "Security") {
+            $("#view").load("./pages/changepassword.html", function () {
+              $.getScript("./pages/changepassword.js");
+            });
           } else {
             $("#view").load("./pages/"+e.itemData.name+".html", function () {
               $.getScript("./pages/"+e.itemData.name+".js");

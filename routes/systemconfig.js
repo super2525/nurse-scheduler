@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const SystemConfig = require('../models/config');
-const auth = require('../middleware/middleware');
+const auth = require('../middleware/authen');
 
 // ดึง configType ต่าง ๆ
 router.get('/types', async (req, res) => {

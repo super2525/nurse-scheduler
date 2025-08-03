@@ -8,6 +8,8 @@ const nodemailer = require("nodemailer");
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const router = express.Router();
+const responseWrapper = require('../middleware/wrapper');
+const auth = require('../middleware/authen');
 
 // Multer: ตั้งค่าเก็บรูปในโฟลเดอร์ uploads/
 const storage = multer.diskStorage({
@@ -134,6 +136,7 @@ function generateFakeToken(length = 11) {
   return token;
 }
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
+
 router.post('/authenticate', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -141,18 +144,18 @@ router.post('/authenticate', async (req, res) => {
     const user = await User.findOne({username}).lean();
 
     if (!user) {
-      return res.status(401).json({ result: "fail", message: "Invalid username or password, contact your admin." });
+      return res.status(200).json({ result: "fail", message: "Invalid username or password, contact your admin." });
     }
 
     // ✅ ตรวจสอบสถานะการยืนยันอีเมล
     if (!user.userStatus || user.userStatus === 'Pending') {
-      return res.status(403).json({ result: "fail", message: "Please confirm your email before login." });
+      return res.status(200).json({ result: "fail", message: "Please confirm your email before login." });
     }
     if (user.userStatus === 'Inactive') {
-      return res.status(403).json({ result: "inactive", message: "Your account is inactive. Please contact admin." });
+      return res.status(200).json({ result: "inactive", message: "Your account is inactive. Please contact admin." });
     }
     if (user.userStatus !== 'Active') {
-      return res.status(403).json({ result: "fail", message: "Account status invalid." });
+      return res.status(200).json({ result: "fail", message: "Account status invalid." });
     }
 
     // ✅ 2. ตรวจ password
@@ -163,7 +166,7 @@ router.post('/authenticate', async (req, res) => {
 
     // ✅ 3. สร้าง token จริง
     const token = jwt.sign(
-      { id: user._id, username: user.username, role: user.role },
+      { id: user._id, username: user.username, role: user.role,userId: user._id },
       JWT_SECRET,
       { expiresIn: '2d' }
     );
@@ -175,12 +178,54 @@ router.post('/authenticate', async (req, res) => {
       { upsert: true, new: true }
     );
 
-    return res.status(200).json({ token ,avatar: user.avatar});
+    return res.status(200).json({result:"success", token ,avatar: user.avatar});
 
   } catch (err) {
     console.error("Login error:", err);
     return res.status(500).json({ result: "fail", message: err.message });
   }
 });
+
+router.post('/test-wrapper', responseWrapper(async (req, res) => {
+  // ตัวอย่างการใช้ responseWrapper
+  return { statusCode: 200, message: "This is a test response", data: { key: "value" } };
+}));
+router.get('/test-wrapper', responseWrapper(async (req, res) => {
+  // ตัวอย่างการใช้ responseWrapper กับ GET
+  return { statusCode: 200, message: "GET request successful", data: { key: "value" } };
+}));
+
+router.post('/change-password', auth, responseWrapper(async (req, res) => {
+  const userId = req.user.userId; // ได้มาจาก token  
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword || !newPassword) {
+    const error = new Error('Current password and new password are required');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const user = await User.findById(userId);
+  console.log('user,userId Data: ',user,userId);
+  if (!user) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+  // ตรวจสอบ current password (สมมติใช้ bcrypt)
+  const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+  if (!passwordMatch) {
+    const error = new Error('Current password is incorrect');
+    error.statusCode = 401;
+    throw error;
+  }
+  // เข้ารหัสรหัสผ่านใหม่
+  const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+  user.password = hashedNewPassword;
+  await user.save();
+
+  return { message: 'Password changed successfully' };
+}));
+
 
 module.exports = router;
