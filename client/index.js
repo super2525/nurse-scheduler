@@ -39,7 +39,7 @@ $(function () {
 
   window.postByAxios = async function (functionName, params) {
     const token = getToken();
-    console.log("postByAxios params:", params);
+    
 
     const isFormData = params instanceof FormData;
 
@@ -57,7 +57,7 @@ $(function () {
       },
     })
       .then((res) => {
-        console.log("postByAxios response:", res);
+        
         return res.data;
       })
       .catch((err) => {
@@ -110,7 +110,7 @@ $(function () {
   $("#signup-form").dxPopup({
     title: "Sign Up",
     visible: false,
-    width: 400,
+    width: "60%",
     height: "auto",
     showCloseButton: true,
     dragEnabled: true,
@@ -388,7 +388,7 @@ $(function () {
     .dxPopup({
       title: "Login",
       visible: false,
-      width: 350,
+      width: "60%",
       height: "auto",
       showCloseButton: true,
       dragEnabled: true,
@@ -424,7 +424,7 @@ $(function () {
                     try {
                       postByAxios("/users/authenticate",form.option("formData")
                       ).then((res) => {
-                        console.log('res Data: ',res);
+                        
                         if (res.result === "success") {
                         // ✅ Save token to localStorage
                         localStorage.setItem("token", res.token);
@@ -508,18 +508,18 @@ $(function () {
         stylingMode: "text",
         displayExpr: "name",
         keyExpr: "id",
-        width: 100,
+        width: 150,
         items: [
           { id: 1, name: "Profile" },
           { id: 2, name: "Settings" },
-          { id: 3, name: "Security" },
+          { id: 3, name: "Change Password"},
           { id: 4, name: "Logout" },
         ],
         onItemClick: function (e) {
           if (e.itemData.name === "Logout") {
             localStorage.removeItem("token");
             location.reload();
-          } else if (e.itemData.name === "Security") {
+          } else if (e.itemData.id === 3) {
             $("#view").load("./pages/changepassword.html", function () {
               $.getScript("./pages/changepassword.js");
             });

@@ -186,11 +186,11 @@ router.post('/authenticate', async (req, res) => {
   }
 });
 
-router.post('/test-wrapper', responseWrapper(async (req, res) => {
+router.post('/userconfig', responseWrapper(async (req, res) => {
   // ตัวอย่างการใช้ responseWrapper
   return { statusCode: 200, message: "This is a test response", data: { key: "value" } };
 }));
-router.get('/test-wrapper', responseWrapper(async (req, res) => {
+router.get('/userconfig', responseWrapper(async (req, res) => {
   // ตัวอย่างการใช้ responseWrapper กับ GET
   return { statusCode: 200, message: "GET request successful", data: { key: "value" } };
 }));

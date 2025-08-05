@@ -17,7 +17,7 @@ const userSchema = new Schema({
 
 exports.User = mongoose.model('User', userSchema);
 
-const userPrivateConfigSchema = new Schema({
+const userConfigSchema = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -27,9 +27,9 @@ const userPrivateConfigSchema = new Schema({
   token: String,
   settings: {
     ward: { type: String},
-    worktype: { type: String, enum: ["fulltime", "parttime","advisor","projective","daily"], default: "fulltime" },
+    worktype: { type: String, enum: ["Full time", "Part time","Advisor","Projective","Daily"], default: "Fullt ime" },
     overtimeRate: { type: Number, default: 0 },
-    overtimeType: { type: String, default: "perShift" },
+    overtimeType: { type: String, enum :["Per shift","Per hours","Per job"],default: "Per shift" },
     specialShiftRate: { type: Number, default: 0 },
     shiftPerMonth: { type: Number, default: 22 },
     selectableShiftCode: {
@@ -39,4 +39,4 @@ const userPrivateConfigSchema = new Schema({
   }
 }, { timestamps: true });
 
-exports.UserConfig = mongoose.model('UserConfig', userPrivateConfigSchema);
+exports.UserConfig = mongoose.model('UserConfig', userConfigSchema);
