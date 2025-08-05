@@ -1,5 +1,5 @@
 const express = require('express');
-const {UserConfig}  = require('../models/user');
+const UserConfig  = require('../models/userconfigmod');
 const router = express.Router();
 const auth = require('../middleware/authen');
 const responseWrapper = require('../middleware/wrapper');

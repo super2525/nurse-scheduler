@@ -24,34 +24,4 @@ function responseWrapper(handler) {
   };
 }
 
-router.post('/postUserInfo', auth, responseWrapper(async (req, res) => {
-  const userId = req.user.userId;
-  const { fullname, displayName } = req.body;
-
-  // ดึง user เดิมเพื่อตรวจสอบ username
-  const existingUser = await User.findById(userId);
-  if (!existingUser) {
-    const error = new Error("User not found");
-    error.statusCode = 404;
-    throw error;
-  }
-
-  // ถ้าไม่ได้ส่ง fullname หรือ displayName มา ใช้ค่าเดียวกับ username
-  const finalFullname = fullname || existingUser.username;
-  const finalDisplayName = displayName || existingUser.username;
-
-  const user = await User.findOneAndUpdate(
-    { _id: userId },
-    { fullname: finalFullname, displayName: finalDisplayName },
-    { new: true, upsert: true, setDefaultsOnInsert: true }
-  );
-
-  return {
-    statusCode: 200,
-    message: "User info saved successfully",
-    data: user,
-  };
-}));
-
-
 module.exports = responseWrapper;

@@ -2,8 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcryptjs');
-const User = require('../models/User').User;
-const UserConfig = require('../models/User').UserConfig;
+const User = require('../models/usermod');
+const UserConfig = require('../models/userconfigmod');
 const nodemailer = require("nodemailer");
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -140,8 +140,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 router.post('/authenticate', async (req, res) => {
   try {
     const { username, password } = req.body;
+    console.log('userName,password Data: ',{username,password}); //ผ่าน 
+    console.log('User: ',User); // Undefined
     // ✅ 1. ตรวจ username
-    const user = await User.findOne({username}).lean();
+    const user = await User.findOne({ username }).select('+password');
 
     if (!user) {
       return res.status(200).json({ result: "fail", message: "Invalid username or password, contact your admin." });
@@ -245,7 +247,5 @@ router.get('/getUserInfo', auth, responseWrapper(async (req, res) => {
     data: user,
   };
 }));
-
-
 
 module.exports = router;
