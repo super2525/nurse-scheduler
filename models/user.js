@@ -1,21 +1,32 @@
-const mongoose = require('mongoose');
+const mongoose =  require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  displayName:{type: String},
+  fullName: { type: String},
+  password: { type: String, required: true, select: false },
   email:    { type: String, required: true },
   phone:    String,
   role:     { type: String, enum: ['Nurse', 'Admin', 'Manager'], required: true },
   avatar:   String, // path to uploaded file
 
-  userStatus: { type: String, default: 'Pending' }, // 0 = Inactive
-  address:    String, // IP address
-  emailToken: { type: String, unique: true }, // Token for email confirmation
-  createDate: { type: Date, default: () => new Date() } // Always set to current date/time
-});
+  userStatus: { type: String, enum: ['Pending', 'Active', 'Inactive'], default: 'Pending' },
+  address:    String, // IP address (or later use for login tracking)
+  emailToken: { type: String }, // used for email confirm or reset
+  preferences: {
+    language: { type: String, enum: ['th', 'en'], default: 'th' },
+    timeFormat: { type: String, enum: ['12h', '24h'], default: '24h' },
+    notifyBeforeShift: { type: Number, default: 30 } // minutes
+  },
+  security: {
+    twoFactorEnabled: { type: Boolean, default: false },
+    lastLogin: Date,
+    loginDevices: [String]
+  }
+}, { timestamps: true });
 
-exports.User = mongoose.model('User', userSchema);
+module.exports = mongoose.models.User || mongoose.model('User', userSchema);
 
 const userConfigSchema = new Schema({
   userId: {
@@ -39,4 +50,5 @@ const userConfigSchema = new Schema({
   }
 }, { timestamps: true });
 
-exports.UserConfig = mongoose.model('UserConfig', userConfigSchema);
+// exports.UserConfig = mongoose.model('UserConfig', userConfigSchema);
+module.exports = mongoose.models.UserConfig || mongoose.model('UserConfig', userConfigSchema);

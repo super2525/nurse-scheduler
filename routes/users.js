@@ -227,5 +227,25 @@ router.post('/change-password', auth, responseWrapper(async (req, res) => {
   return { message: 'Password changed successfully' };
 }));
 
+router.get('/getUserInfo', auth, responseWrapper(async (req, res) => {
+  const userId = req.user.userId; // ได้มาจาก token ที่ auth decode ให้แล้ว
+
+  // 🔍 ดึงจากฐานข้อมูลจริง
+  const user = await User.findById(userId).select('-password'); // ไม่ส่ง password กลับ
+
+  if (!user) {
+    const error = new Error('Invalid defined user');
+    error.statusCode = 401;
+    throw error;
+  }
+
+  return {
+    status: 200,
+    result: "success",message:"user informations",
+    data: user,
+  };
+}));
+
+
 
 module.exports = router;
