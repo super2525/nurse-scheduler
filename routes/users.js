@@ -248,4 +248,5 @@ router.get('/getUserInfo', auth, responseWrapper(async (req, res) => {
   };
 }));
 
+
 module.exports = router;
