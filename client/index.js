@@ -522,9 +522,9 @@ $(function () {
               $.getScript("./pages/changepassword.js");
             });
           } else {
-            console.log('e.itemData.name Data: ',e.itemData.name);
-            $("#view").load("./pages/"+e.itemData.name+".html", function () {
-              $.getScript("./pages/"+e.itemData.name+".js");
+            const pageName = e.itemData.name.toLowerCase(); // ทำให้ชื่อไฟล์เป็นพิมพ์เล็ก
+            $("#view").load(`./pages/${pageName}.html`, function () {
+              $.getScript(`./pages/${pageName}.js`);
             });
           }
         },
