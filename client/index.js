@@ -1,5 +1,3 @@
-  const BASE_URL = "http://127.0.0.1:3000/api";
-  const IMG_URL = "http://127.0.0.1:3000";
 $(function () {
   function showToast(type, message, duration = 2000) {
     const container = document.getElementById("toast-container");
@@ -524,6 +522,7 @@ $(function () {
               $.getScript("./pages/changepassword.js");
             });
           } else {
+            console.log('e.itemData.name Data: ',e.itemData.name);
             $("#view").load("./pages/"+e.itemData.name+".html", function () {
               $.getScript("./pages/"+e.itemData.name+".js");
             });
