@@ -140,8 +140,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 router.post('/authenticate', async (req, res) => {
   try {
     const { username, password } = req.body;
-    console.log('userName,password Data: ',{username,password}); //ผ่าน 
-    console.log('User: ',User); // Undefined
+    
     // ✅ 1. ตรวจ username
     const user = await User.findOne({ username }).select('+password');
 
@@ -208,7 +207,7 @@ router.post('/change-password', auth, responseWrapper(async (req, res) => {
   }
 
   const user = await User.findById(userId);
-  console.log('user,userId Data: ',user,userId);
+  
   if (!user) {
     const error = new Error('User not found');
     error.statusCode = 404;
@@ -247,6 +246,40 @@ router.get('/getUserInfo', auth, responseWrapper(async (req, res) => {
     data: user,
   };
 }));
+
+router.post('/postUserInfo',auth, upload.single('avatar'), async (req, res) => {
+  try {
+    const userId = req.body.userId; // ได้มาจาก token หรือ body
+    const { username, email, phone, preferences } = req.body;
+    const avatar = req.file ? `/uploads/${req.file.filename}` : null;
+
+    // 🔍 ตรวจสอบว่ามี user นี้อยู่หรือไม่
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ result: 'fail', message: 'User not found' });
+    }
+
+    // ✅ อัปเดตข้อมูลผู้ใช้
+    user.username = username || user.username;
+    user.displayName = username || user.displayName; // อัปเดต displayName ด้วย
+    user.fullName = req.body.fullName || user.fullName; 
+    user.email = email || user.email;
+    user.phone = phone || user.phone;
+    user.avatar = avatar || user.avatar;
+    
+    if (preferences) {
+      user.preferences = preferences; // อัปเดต preferences ถ้ามี
+    }
+    
+    await user.save();
+
+    return res.status(200).json({ result: 'success', message: 'Profile updated successfully', data: user });  
+}
+  catch (err) {
+    console.error('Error updating user info:', err);
+    return res.status(500).json({ result: 'fail', message: err.message });
+  }
+});
 
 
 module.exports = router;
