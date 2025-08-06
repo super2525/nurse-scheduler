@@ -14,7 +14,7 @@ const userConfigSchema = new Schema({
     ward: { type: String },
     worktype: { type: String, enum: ["Full time", "Part time", "Advisor", "Projective", "Daily"], default: "Full time" },
     overtimeRate: { type: Number, default: 0 },
-    overtimeType: { type: String, enum: ["Per shift", "Per hours", "Per job"], default: "Per shift" },
+    overtimeType: { type: String, enum: ["Per shift", "Per hours", "Per job", 'Per Piece'], default: "Per shift" },
     specialShiftRate: { type: Number, default: 0 },
     shiftPerMonth: { type: Number, default: 22 },
     selectableShiftCode: {

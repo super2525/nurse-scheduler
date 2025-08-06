@@ -1,20 +1,10 @@
-html, body {
-    margin: 0; padding: 0; height: 100%;
-  }
-  .container {
-    display: flex;
-    /*height: 100vh !important; /* ให้เต็มหน้าจอแนวตั้ง */
-  }
   #drawer {
-    width: 250px; /* กำหนดความกว้างตายตัว */
-    background-color: #eee;
-    overflow-y: auto; /* เลื่อนถ้าสูงเกิน */
+    overflow-y: auto;
     height: 100vh !important;
-  }
-  #main-area {
-    flex-grow: 1; /* กินพื้นที่ที่เหลือทั้งหมด */
-    background-color: #fff;
-    overflow-y: auto; /* เลื่อนถ้าสูงเกิน */
+    opacity: 1; 
+    background-color: rgba(255, 255, 255, 1);
+    justify-content: center;
+    align-items: flex-start;
   }
 
 /* header ของ Grid*/
@@ -89,12 +79,24 @@ div.dx-button:nth-child(2){
 /* เปลี่ยน background ของ panel menu (actual drawer content) */
 .dx-drawer-panel-content {
   background-color: #f90202 !important; /* ส้มกลาง หรือปรับเฉดตามต้องการ */
+  justify-content: center;
+  align-items: center !important;
 }
 
 .dx-overlay-content {
-  background-color: rgba(236, 100, 5, 0.2) !important;
+  background-color: rgb(253, 253, 251);
+  border: solid thin rgb(255, 157, 0);
+  justify-content: center;   /* จัดแนวนอนให้อยู่ตรงกลาง */
+  align-items: flex-start;   /* ไม่ต้องกลางจอทั้งแนวตั้ง */
 }
-  
+#view {
+  display: flex !important;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+  padding: 2rem;
+  border: solid thin rgb(255, 150, 0) !important;
+}  
 
 .dx-toolbar .dx-toolbar-items-container{
   background-color: orange !important;
